@@ -776,45 +776,32 @@ walkthrough:
 
         - id: step5_2
           vm: kali
-          title: "Windows AD: What's Different"
+          title: "Skills That Transfer to Windows AD"
           content: |
-            ## Windows AD Attacks (Educational Reference)
+            ## What You Learned Applies Everywhere
 
-            This lab uses Samba AD. In a **Windows AD** environment, you'd have additional attack options.
+            This lab uses **Samba AD** (Linux-based), but the skills you practiced transfer directly to Windows Active Directory:
 
-            ### DCSync Attack (Windows Only)
+            | Skill | Works on Samba | Works on Windows |
+            |-------|----------------|------------------|
+            | SMB authentication | ✅ | ✅ |
+            | RPC user/group enumeration | ✅ | ✅ |
+            | LDAP queries | ✅ | ✅ |
+            | Password policy checks | ✅ | ✅ |
+            | Backdoor account creation | ✅ | ✅ |
 
-            DCSync replicates password hashes directly from a Domain Controller:
+            ### Windows-Only Attacks (For Future Learning)
 
-            ```bash
-            # This would work on Windows AD, NOT in this lab
-            impacket-secretsdump 'ACMEWIDGETS/Administrator:Adm1n2024@DC_IP'
-            ```
+            When you encounter **Windows AD** in other labs or real engagements, you'll have additional options:
 
-            **Why it doesn't work here:** DCSync uses Windows DRSUAPI (replication protocol). Samba doesn't implement this.
+            - **DCSync** - Extract all password hashes from the domain
+            - **PSExec/WMIExec** - Get remote shells on Windows machines
+            - **Kerberoasting** - Crack service account passwords
+            - **Pass-the-Hash** - Authenticate with NTLM hashes
 
-            ### Remote Code Execution (Windows Only)
+            These require Windows-specific protocols that Samba doesn't implement.
 
-            ```bash
-            # PSExec - creates a service on target
-            impacket-psexec 'Administrator:Adm1n2024@TARGET_IP'
-
-            # WMIExec - uses Windows Management Instrumentation
-            impacket-wmiexec 'Administrator:Adm1n2024@TARGET_IP'
-            ```
-
-            **Why these don't work here:** They require Windows services (SCM, WMI) that don't exist on Linux/Samba.
-
-            ### What DOES Transfer
-
-            The skills you practiced work everywhere:
-            - ✅ SMB enumeration and authentication
-            - ✅ RPC-based user/group enumeration
-            - ✅ LDAP queries and data extraction
-            - ✅ Password policy analysis
-            - ✅ Account creation for persistence
-
-            > **Real-world insight:** Many networks mix Windows and Linux. Knowing both attack surfaces makes you more effective.
+            > **Key takeaway:** Master the fundamentals here (enumeration, lateral movement, persistence) - they're the foundation for all AD attacks.
 
         - id: step5_3
           vm: kali
