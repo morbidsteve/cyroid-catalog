@@ -49,8 +49,6 @@ RUN apt-get update --allow-insecure-repositories && \
     aircrack-ng \
     # Utilities
     curl wget git vim tmux jq tree python3-pip python3-venv zsh fzf ripgrep \
-    # Optional packages (may not exist on all archs)
-    && apt-get install -y --no-install-recommends rustscan || true \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # === LAYER 2: All tool downloads + pip installs in one RUN ===
@@ -101,7 +99,6 @@ RUN if [ -f /usr/share/wordlists/rockyou.txt.gz ]; then gunzip -k /usr/share/wor
 ## Reconnaissance
 ```bash
 nmap -sC -sV -p- -oA full_scan <target>
-rustscan -a <target> -- -sC -sV
 enum4linux-ng -A <target>
 ```
 
