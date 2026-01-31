@@ -33,7 +33,7 @@ networks:
 vms:
   # Attack box - Custom Kali with pre-installed tools (Metasploit, Impacket, etc.)
   - hostname: kali
-    base_image_tag: "cyroid/kali-attack:latest"
+    base_image_tag: "127.0.0.1:5000/cyroid/kali-attack:latest"
     network_name: internet
     ip_address: "172.16.0.10"
     cpu: 4
@@ -65,7 +65,7 @@ vms:
 
   # DMZ - Vulnerable WordPress with SQLi
   - hostname: webserver
-    base_image_tag: "cyroid/redteam-lab-wordpress:latest"
+    base_image_tag: "127.0.0.1:5000/cyroid/redteam-lab-wordpress:latest"
     network_name: dmz
     ip_address: "172.16.1.10"
     cpu: 2
@@ -76,7 +76,7 @@ vms:
 
   # Internal network - Samba Domain Controller
   - hostname: dc01
-    base_image_tag: "cyroid/samba-dc:latest"
+    base_image_tag: "127.0.0.1:5000/cyroid/samba-dc:latest"
     network_name: internal
     ip_address: "172.16.2.10"
     cpu: 2
@@ -87,7 +87,7 @@ vms:
 
   # Internal network - Samba File Server with sensitive data
   - hostname: fileserver
-    base_image_tag: "cyroid/redteam-lab-fileserver:latest"
+    base_image_tag: "127.0.0.1:5000/cyroid/redteam-lab-fileserver:latest"
     network_name: internal
     ip_address: "172.16.2.20"
     cpu: 1
@@ -98,7 +98,7 @@ vms:
 
   # Internal network - Victim Workstation (simulated browsing)
   - hostname: ws01
-    base_image_tag: "cyroid/redteam-lab-workstation:latest"
+    base_image_tag: "127.0.0.1:5000/cyroid/redteam-lab-workstation:latest"
     network_name: internal
     ip_address: "172.16.2.30"
     cpu: 1
