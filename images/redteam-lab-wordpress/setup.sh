@@ -78,6 +78,22 @@ if ! wp core is-installed --path=/var/www/html --allow-root 2>/dev/null; then
     wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
     wp rewrite flush --path=/var/www/html --allow-root
 
+    # Create .htaccess for Apache mod_rewrite (WP-CLI doesn't create this automatically)
+    cat > /var/www/html/.htaccess << 'HTACCESS'
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+HTACCESS
+    chown www-data:www-data /var/www/html/.htaccess
+    chmod 644 /var/www/html/.htaccess
+
     echo "WordPress installation complete!"
 fi
 
