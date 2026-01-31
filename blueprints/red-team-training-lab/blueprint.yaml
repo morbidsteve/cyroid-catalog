@@ -599,24 +599,16 @@ walkthrough:
             rpcclient -U 'Administrator%Adm1n2024' 172.16.2.12 -c 'enumdomusers'
             ```
 
-            **Expected output:**
-            ```
-            user:[Administrator] rid:[0x1f4]
-            user:[Guest] rid:[0x1f5]
-            user:[krbtgt] rid:[0x1f6]
-            user:[jsmith] rid:[0x3e8]
-            user:[mwilliams] rid:[0x3e9]
-            user:[svc_backup] rid:[0x3ea]
-            ```
+            **Expected output:** A list of all domain users with their RIDs (Resource IDs). You should see Administrator, jsmith, mwilliams, svc_backup, and others.
 
             ### Get User Details
 
             ```bash
-            # Query the svc_backup account (RID 0x3ea = 1002)
-            rpcclient -U 'Administrator%Adm1n2024' 172.16.2.12 -c 'queryuser 0x3ea'
+            # Query a specific user by username
+            rpcclient -U 'Administrator%Adm1n2024' 172.16.2.12 -c 'queryuser svc_backup'
             ```
 
-            Notice the **description field** - it reveals the account's purpose!
+            Notice the **Description** field shows "Backup service account" - this reveals the account's purpose! Service accounts are often high-value targets.
 
             ### Enumerate Domain Groups
 
